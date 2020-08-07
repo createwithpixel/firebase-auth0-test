@@ -24,9 +24,18 @@ const firebaseLoginWithAuth0 = (user, accessToken) => {
     }).then((response) => {
         // Sign in to Firebase
         firebase.auth().signInWithCustomToken(response.data.firebaseToken)
-            .then(console.log("Signed in FIREBASE!"))
+            .then(() => {
+                console.log("Signed in FIREBASE!");
+
+                // Grab user data and update Firebase
+                auth0.getUser().then(userAuth0 => {
+                    firebase.auth().currentUser.updateEmail(userAuth0.email);
+                    firebase.auth().currentUser.updateProfile({ displayName: userAuth0.name });
+                    console.log("Updated Firebase user");
+                });
+            })
             .catch(error => {
                 console.log(error)
-            })
+            });
     });
 };
